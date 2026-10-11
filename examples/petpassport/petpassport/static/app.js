@@ -186,7 +186,13 @@ backBtn.addEventListener('click', () => {
     chatContainer.classList.remove('hidden');
 });
 
+const walkSavesInFlight = new Set();
+
 async function toggleWalked(path) {
+    const key = path.id != null ? String(path.id) : path;
+    if (walkSavesInFlight.has(key)) return;
+    walkSavesInFlight.add(key);
+
     const previous = Boolean(path.walked);
     path.walked = !previous;
     refreshWalkedToggles(path);
@@ -203,6 +209,8 @@ async function toggleWalked(path) {
         path.walked = previous;
         refreshWalkedToggles(path);
         console.error('Error updating path:', error);
+    } finally {
+        walkSavesInFlight.delete(key);
     }
 }
 
